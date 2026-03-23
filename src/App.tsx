@@ -16,6 +16,10 @@ import AdminCourses from "./pages/admin/AdminCourses";
 import AdminCourseEditor from "./pages/admin/AdminCourseEditor";
 import AdminUsers from "./pages/admin/AdminUsers";
 import NotFound from "./pages/NotFound";
+import { LibraryPage } from "./pages/library/LibraryPage";
+import { EquipmentLibraryPage } from "./pages/library/EquipmentLibraryPage";
+import { ManualPage } from "./pages/library/ManualPage";
+import { PdfViewerPage } from "./pages/library/PdfViewerPage";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +38,10 @@ const App = () => (
                 <Route path="/academy/course/:slug" element={<CourseDetail />} />
                 <Route path="/academy/course/:slug/learn" element={<LearningView />} />
                 <Route path="/academy/my-courses" element={<MyCourses />} />
+                <Route path="/library" element={<LibraryPage />} />
+                <Route path="/library/:equipmentId" element={<EquipmentLibraryPage />} />
+                <Route path="/library/:equipmentId/:manualId" element={<ManualPage />} />
+                <Route path="/library/:equipmentId/:manualId/view/:documentId" element={<PdfViewerPage />} />
                 <Route path="/academy/admin" element={<AdminLayout />}>
                   <Route index element={<AdminDashboard />} />
                   <Route path="courses" element={<AdminCourses />} />

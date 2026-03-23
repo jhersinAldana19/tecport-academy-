@@ -1,3 +1,5 @@
+import { useState, useMemo } from 'react';
+import { Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const mockUsers = [
@@ -12,12 +14,35 @@ const mockUsers = [
 
 export default function AdminUsers() {
   const { t } = useLanguage();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredUsers = useMemo(() => {
+    return mockUsers.filter(user => 
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.role.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
 
   return (
     <div>
       <h1 className="mb-6 text-xl font-bold text-foreground">{t('admin.users')}</h1>
 
-      <div className="rounded border border-border bg-card">
+      {/* Search */}
+      <div className="mb-4">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder={t('admin.searchUsers')}
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="h-9 w-full rounded border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+        </div>
+      </div>
+
+      <div className="overflow-x-auto rounded border border-border bg-card">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs text-muted-foreground">
@@ -29,7 +54,7 @@ export default function AdminUsers() {
             </tr>
           </thead>
           <tbody>
-            {mockUsers.map(user => (
+            {filteredUsers.map(user => (
               <tr key={user.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-2.5 font-medium text-foreground">{user.name}</td>
                 <td className="px-4 py-2.5 text-muted-foreground">{user.email}</td>

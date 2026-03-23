@@ -172,6 +172,19 @@ export default function AdminCourseEditor() {
               <label className="mb-1 block text-xs font-medium text-muted-foreground">{t('admin.courseDescription')}</label>
               <Textarea rows={3} value={course.description} onChange={e => updateField('description', e.target.value)} />
             </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">{t('admin.courseImage')}</label>
+              <Input 
+                value={course.image} 
+                onChange={e => updateField('image', e.target.value)} 
+                placeholder="https://example.com/image.jpg or /assets/course-image.jpg"
+              />
+              {course.image && (
+                <div className="mt-2">
+                  <img src={course.image} alt="Preview" className="h-32 w-full rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                </div>
+              )}
+            </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
                 <label className="mb-1 block text-xs font-medium text-muted-foreground">{t('course.duration')}</label>

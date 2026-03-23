@@ -1,28 +1,98 @@
+import { useState, useMemo } from 'react';
+import { Search, SlidersHorizontal } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCourses } from '@/contexts/CourseContext';
 import CourseCard from '@/components/CourseCard';
 import Header from '@/components/Header';
+import type { Course } from '@/data/courses';
+
+type LevelFilter = 'All' | 'Basic' | 'Intermediate' | 'Advanced';
 
 export default function Index() {
   const { t } = useLanguage();
   const { getVisibleCourses } = useCourses();
-  const courses = getVisibleCourses();
+  const allCourses = getVisibleCourses();
+  const [levelFilter, setLevelFilter] = useState<LevelFilter>('All');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredCourses = useMemo(() => {
+    return allCourses.filter(course => {
+      // Filter by level
+      const matchesLevel = levelFilter === 'All' || course.level === levelFilter;
+      
+      // Filter by search query
+      const matchesSearch = searchQuery === '' || 
+        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.description.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      return matchesLevel && matchesSearch;
+    });
+  }, [allCourses, levelFilter, searchQuery]);
+
+  const levels: LevelFilter[] = ['All', 'Basic', 'Intermediate', 'Advanced'];
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      
+      {/* Hero Banner */}
+      <div className="bg-[#1a4d6f] text-white">
+        <div className="mx-auto max-w-7xl px-4 py-12">
+          <h1 className="text-3xl font-bold">{t('home.heroTitle')}</h1>
+          <p className="mt-3 max-w-2xl text-base text-gray-100">
+            {t('home.heroSubtitle')}
+          </p>
+        </div>
+      </div>
+
       <main className="mx-auto max-w-7xl px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-foreground">{t('home.title')}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t('home.subtitle')}</p>
+        {/* Filters and Search */}
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* Level filters */}
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+            <div className="flex gap-1">
+              {levels.map(level => (
+                <button
+                  key={level}
+                  onClick={() => setLevelFilter(level)}
+                  className={`rounded px-4 py-1.5 text-sm font-medium transition-colors ${
+                    levelFilter === level
+                      ? 'bg-accent text-white'
+                      : 'border border-border bg-card text-foreground hover:bg-secondary'
+                  }`}
+                >
+                  {t(`filter.${level.toLowerCase()}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Search */}
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder={t('filter.searchCourses')}
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="h-9 w-full rounded border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+            />
+          </div>
         </div>
 
-        <h2 className="mb-4 text-lg font-semibold text-foreground">{t('home.allCourses')}</h2>
-
+        {/* Courses grid */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {courses.map(course => (
-            <CourseCard key={course.id} course={course} />
-          ))}
+          {filteredCourses.length > 0 ? (
+            filteredCourses.map(course => (
+              <CourseCard key={course.id} course={course} />
+            ))
+          ) : (
+            <div className="col-span-full py-12 text-center text-muted-foreground">
+              {t('filter.noCourses')}
+            </div>
+          )}
         </div>
       </main>
     </div>

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Plus, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Search } from 'lucide-react';
+import { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCourses } from '@/contexts/CourseContext';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,14 @@ import { Button } from '@/components/ui/button';
 export default function AdminCourses() {
   const { t } = useLanguage();
   const { courses, updateCourse, deleteCourse } = useCourses();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredCourses = useMemo(() => {
+    return courses.filter(course => 
+      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.instructor.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [courses, searchQuery]);
 
   const toggleVisibility = (course: typeof courses[0]) => {
     updateCourse({ ...course, visible: !course.visible });
@@ -23,7 +32,21 @@ export default function AdminCourses() {
         </Link>
       </div>
 
-      <div className="rounded border border-border bg-card">
+      {/* Search */}
+      <div className="mb-4">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder={t('admin.searchCourses')}
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="h-9 w-full rounded border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent"
+          />
+        </div>
+      </div>
+
+      <div className="overflow-x-auto rounded border border-border bg-card">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs text-muted-foreground">
@@ -36,7 +59,7 @@ export default function AdminCourses() {
             </tr>
           </thead>
           <tbody>
-            {courses.map(course => (
+            {filteredCourses.map(course => (
               <tr key={course.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-2.5">
                   <div className="flex items-center gap-3">

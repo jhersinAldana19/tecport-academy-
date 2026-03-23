@@ -19,6 +19,7 @@ export default function Header() {
 
   const navItems = [
     { label: t('nav.courses'), path: '/academy', show: true },
+    { label: t('nav.library'), path: '/library', show: true },
     { label: t('nav.myCourses'), path: '/academy/my-courses', show: role === 'student' || role === 'admin' },
     { label: t('nav.admin'), path: '/academy/admin', show: role === 'admin' },
   ];
@@ -27,9 +28,10 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <Link to="/academy" className="flex items-center gap-2">
           <img src={logo} alt="TECPORT" className="h-8" />
+          <span className="text-lg font-semibold text-muted-foreground">ACADEMY</span>
         </Link>
 
         {/* Desktop nav */}
@@ -38,7 +40,7 @@ export default function Header() {
             <Link
               key={item.path}
               to={item.path}
-              className={`text-sm font-medium transition-colors hover:text-accent ${isActive(item.path) ? 'text-accent' : 'text-foreground'}`}
+              className={`text-sm font-medium transition-colors hover:text-accent ${isActive(item.path) ? 'text-accent' : 'text-gray-500'}`}
             >
               {item.label}
             </Link>
@@ -99,7 +101,7 @@ export default function Header() {
               key={item.path}
               to={item.path}
               onClick={() => setMobileOpen(false)}
-              className={`block py-2 text-sm font-medium ${isActive(item.path) ? 'text-accent' : 'text-foreground'}`}
+              className={`block py-2 text-sm font-medium ${isActive(item.path) ? 'text-accent' : 'text-gray-500'}`}
             >
               {item.label}
             </Link>
