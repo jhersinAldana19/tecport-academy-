@@ -1,0 +1,11 @@
+# Asegurar que los archivos binarios se manejen correctamente
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.webp binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
