@@ -1,16 +1,24 @@
 # Netlify configuration for Tecport Academy
 
 [build]
-  # Build command
-  command = "bun run build"
+  # Build command - instalar dependencias y construir
+  command = "npm install && npm run build"
   # Output directory
   publish = "dist"
   
 [build.environment]
   NODE_VERSION = "18"
+  # Forzar a npm a no usar cache
+  NPM_FLAGS = "--legacy-peer-deps"
 
 # Redirect all routes to index.html for client-side routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Headers para assets estáticos
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
