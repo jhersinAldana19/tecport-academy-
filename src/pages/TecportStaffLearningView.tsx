@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, CheckCircle, ExternalLink, Play } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, CheckCircle, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
   flattenTecportStaffSessions,
   getTecportStaffCourseById,
 } from '@/data/tecportStaffCourses';
+import { getYoutubeEmbedUrl } from '@/lib/youtube';
 
 export default function TecportStaffLearningView() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -45,6 +46,9 @@ export default function TecportStaffLearningView() {
 
   const courseTitle = t(`tecportStaff.courses.${course.id}.title`);
   const sessionTitle = t(`tecportStaff.courses.${course.id}.sessions.${currentSession.id}.title`);
+  const youtubeEmbedUrl = currentSession.videoUrl
+    ? getYoutubeEmbedUrl(currentSession.videoUrl)
+    : null;
 
   const goToSession = (sessionId: string) => {
     setSearchParams({ session: sessionId });
@@ -100,19 +104,26 @@ export default function TecportStaffLearningView() {
       {/* Main: stack on mobile, side-by-side on desktop (no forced empty gap) */}
       <div className="flex flex-col lg:flex-1 lg:flex-row">
         <div className="p-3 sm:p-4 lg:flex-1 lg:p-6">
-          <div className="mb-3 flex min-h-[220px] flex-col items-center justify-center rounded border border-border bg-primary/5 px-4 py-8 text-center sm:mb-4 sm:min-h-0 sm:aspect-video sm:p-6">
-            <Play className="h-10 w-10 text-primary/30 sm:h-12 sm:w-12" />
-            <p className="mt-3 text-sm font-medium text-foreground">{sessionTitle}</p>
-            <p className="mt-1 max-w-md text-xs text-muted-foreground">
-              {t('tecportStaff.openVideoHint')}
-            </p>
-            {currentSession.videoUrl && (
-              <Button asChild variant="accent" size="sm" className="mt-4 w-full max-w-xs sm:w-auto">
-                <a href={currentSession.videoUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
-                  {t('tecportStaff.openVideo')}
-                </a>
-              </Button>
+          <div className="mb-3 overflow-hidden rounded border border-border bg-primary/5 sm:mb-4">
+            {youtubeEmbedUrl ? (
+              <div className="aspect-video">
+                <iframe
+                  key={currentSession.id}
+                  className="h-full w-full"
+                  src={youtubeEmbedUrl}
+                  title={sessionTitle}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div className="flex min-h-[220px] flex-col items-center justify-center px-4 py-8 text-center sm:aspect-video sm:min-h-0">
+                <Play className="h-10 w-10 text-primary/30 sm:h-12 sm:w-12" />
+                <p className="mt-3 text-sm font-medium text-foreground">{sessionTitle}</p>
+                <p className="mt-1 max-w-md text-xs text-muted-foreground">
+                  {t('tecportStaff.videoUnavailable')}
+                </p>
+              </div>
             )}
           </div>
 

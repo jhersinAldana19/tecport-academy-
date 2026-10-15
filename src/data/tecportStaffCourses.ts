@@ -17,7 +17,7 @@ export type TecportStaffCourseLevelFilter = 'basic' | 'intermediate' | 'advanced
 
 export interface TecportStaffSession {
   id: string;
-  /** SharePoint / Stream URL. Opens in a new tab (embed not reliable for these links). */
+  /** Prefer YouTube watch URLs for in-app playback. */
   videoUrl?: string;
 }
 
@@ -33,11 +33,8 @@ export interface TecportStaffCourse {
   sections: TecportStaffSection[];
 }
 
-const HIDRAULICA_CLASE_1 =
-  'https://tecportla.sharepoint.com/_layouts/15/stream.aspx?id=%2FTECPORT%20GROUP%2FTECPORT%20LATAM%2FTECPORT%20ACADEMY%2FVOH%20TECPORT%20CLASE%201%20Ma%2013%20Oct%2026%20%2D%20PORT%2Emp4&ga=1';
-
-const HIDRAULICA_CLASE_2 =
-  'https://tecportla.sharepoint.com/_layouts/15/stream.aspx?id=%2FTECPORT%20GROUP%2FTECPORT%20LATAM%2FTECPORT%20ACADEMY%2FVOH%20TECPORT%20CLASE%202%20Mie%2014%20Oct%2026%20%2D%20PORT%2Emp4&ga=1';
+const HIDRAULICA_CLASE_1 = 'https://www.youtube.com/watch?v=qbaPz1r1KMo';
+const HIDRAULICA_CLASE_2 = 'https://www.youtube.com/watch?v=gOQwz7CZQf8';
 
 export const tecportStaffCourses: readonly TecportStaffCourse[] = [
   {
