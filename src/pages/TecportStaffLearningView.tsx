@@ -127,45 +127,43 @@ export default function TecportStaffLearningView() {
             )}
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-            {prevSession ? (
+          <div className="flex flex-wrap items-stretch gap-2 sm:items-center sm:justify-between">
+            {prevSession && (
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full sm:w-auto"
+                className="min-w-0 flex-1 px-2 text-xs sm:flex-none sm:px-3 sm:text-sm"
                 onClick={() => goToSession(prevSession.id)}
               >
-                <ArrowLeft className="mr-1 h-3.5 w-3.5" /> {t('course.previousLesson')}
+                <ArrowLeft className="mr-1 h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">{t('course.previousLesson')}</span>
               </Button>
-            ) : (
-              <span className="hidden sm:block sm:w-24" />
             )}
 
             <Button
               variant={isCompleted ? 'secondary' : 'accent'}
               size="sm"
-              className="w-full sm:w-auto"
+              className="min-w-0 flex-1 px-2 text-xs sm:flex-none sm:px-3 sm:text-sm"
               onClick={toggleComplete}
             >
               {isCompleted ? (
-                <CheckCircle className="mr-1 h-3.5 w-3.5" />
+                <CheckCircle className="mr-1 h-3.5 w-3.5 shrink-0" />
               ) : (
-                <Check className="mr-1 h-3.5 w-3.5" />
+                <Check className="mr-1 h-3.5 w-3.5 shrink-0" />
               )}
-              {t('course.markComplete')}
+              <span className="truncate">{t('course.markComplete')}</span>
             </Button>
 
-            {nextSession ? (
+            {nextSession && (
               <Button
                 variant="accent"
                 size="sm"
-                className="w-full sm:w-auto"
+                className="min-w-0 flex-1 px-2 text-xs sm:flex-none sm:px-3 sm:text-sm"
                 onClick={() => goToSession(nextSession.id)}
               >
-                {t('course.nextLesson')} <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                <span className="truncate">{t('course.nextLesson')}</span>
+                <ArrowRight className="ml-1 h-3.5 w-3.5 shrink-0" />
               </Button>
-            ) : (
-              <span className="hidden sm:block sm:w-24" />
             )}
           </div>
         </div>
