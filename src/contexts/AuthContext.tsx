@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
+import { TEMP_ACCESS } from '@/config/tempAccess';
 
-export type UserRole = 'guest' | 'student' | 'admin';
+export type UserRole = 'guest' | 'student' | 'admin' | 'tecport_staff';
 
 interface AuthContextType {
   role: UserRole;
@@ -9,18 +10,28 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType>({
-  role: 'guest',
+  role: TEMP_ACCESS.defaultRole,
   setRole: () => {},
-  userName: 'Guest',
+  userName: 'Tecport Staff',
 });
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [role, setRole] = useState<UserRole>('student');
+const displayNameByRole: Record<UserRole, string> = {
+  guest: 'Guest',
+  student: 'Carlos Méndez',
+  admin: 'Admin User',
+  tecport_staff: 'Tecport Staff',
+};
 
-  const userName = role === 'admin' ? 'Admin User' : role === 'student' ? 'Carlos Méndez' : 'Guest';
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [role, setRoleState] = useState<UserRole>(TEMP_ACCESS.defaultRole);
+
+  const setRole = (nextRole: UserRole) => {
+    if (nextRole === 'admin' && !TEMP_ACCESS.adminEnabled) return;
+    setRoleState(nextRole);
+  };
 
   return (
-    <AuthContext.Provider value={{ role, setRole, userName }}>
+    <AuthContext.Provider value={{ role, setRole, userName: displayNameByRole[role] }}>
       {children}
     </AuthContext.Provider>
   );

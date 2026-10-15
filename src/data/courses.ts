@@ -12,6 +12,7 @@ export interface Lesson {
   title: string;
   duration: string;
   type: 'video' | 'pdf' | 'quiz';
+  videoUrl?: string; // Optional YouTube video URL
 }
 
 export interface Section {
@@ -382,16 +383,16 @@ export const defaultCourses: Course[] = [
         id: 's6-1',
         title: 'Hazard Awareness',
         lessons: [
-          { id: 'l6-1', title: 'Types of Workplace Hazards', duration: '20 min', type: 'video' },
-          { id: 'l6-2', title: 'Risk Assessment Basics', duration: '15 min', type: 'video' },
+          { id: 'l6-1', title: 'Types of Workplace Hazards', duration: '20 min', type: 'video', videoUrl: 'https://www.youtube.com/watch?v=Jv85rhYojYs' },
+          { id: 'l6-2', title: 'Risk Assessment Basics', duration: '15 min', type: 'video', videoUrl: 'https://www.youtube.com/watch?v=WkTvuj4yapY' },
         ],
       },
       {
         id: 's6-2',
         title: 'Personal Protective Equipment',
         lessons: [
-          { id: 'l6-3', title: 'PPE Categories', duration: '20 min', type: 'video' },
-          { id: 'l6-4', title: 'Proper Use & Maintenance', duration: '15 min', type: 'video' },
+          { id: 'l6-3', title: 'PPE Categories', duration: '20 min', type: 'video', videoUrl: 'https://www.youtube.com/watch?v=-4gu3LkQhP0' },
+          { id: 'l6-4', title: 'Proper Use & Maintenance', duration: '15 min', type: 'video', videoUrl: 'https://www.youtube.com/watch?v=gRRJbIpAROs' },
           { id: 'l6-5', title: 'PPE Selection Guide', duration: '10 min', type: 'pdf' },
         ],
       },
@@ -399,8 +400,8 @@ export const defaultCourses: Course[] = [
         id: 's6-3',
         title: 'Emergency Procedures',
         lessons: [
-          { id: 'l6-6', title: 'Emergency Response Plan', duration: '25 min', type: 'video' },
-          { id: 'l6-7', title: 'First Aid Basics', duration: '20 min', type: 'video' },
+          { id: 'l6-6', title: 'Emergency Response Plan', duration: '25 min', type: 'video', videoUrl: 'https://www.youtube.com/watch?v=IAl0KE7iRBg' },
+          { id: 'l6-7', title: 'First Aid Basics', duration: '20 min', type: 'video', videoUrl: 'https://www.youtube.com/watch?v=mB7H9js4xHs' },
           { id: 'l6-8', title: 'Final Assessment', duration: '15 min', type: 'quiz' },
         ],
       },

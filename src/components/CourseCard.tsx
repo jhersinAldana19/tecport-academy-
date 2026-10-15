@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Clock } from 'lucide-react';
+import CourseUnavailableRibbon from '@/components/CourseUnavailableRibbon';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { TEMP_ACCESS } from '@/config/tempAccess';
 import type { Course } from '@/data/courses';
 
 const levelColors: Record<string, string> = {
@@ -11,22 +13,23 @@ const levelColors: Record<string, string> = {
 
 export default function CourseCard({ course }: { course: Course }) {
   const { t } = useLanguage();
+  const canEnter = TEMP_ACCESS.publicCoursesEnterable;
 
-  return (
-    <Link
-      to={`/academy/course/${course.slug}`}
-      className="group block overflow-hidden rounded border border-border bg-card transition-all hover:shadow-md"
-    >
+  const body = (
+    <>
       <div className="relative aspect-[5/4] overflow-hidden">
         <img
           src={course.image}
           alt={course.title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 ${
+            canEnter ? '' : 'brightness-75'
+          }`}
           loading="lazy"
         />
         <div className="absolute inset-0 bg-foreground/20" />
-        <span className={`absolute left-3 top-3 rounded px-2 py-0.5 text-xs font-semibold ${levelColors[course.level]}`}>
-          {course.level}
+        {!canEnter && <CourseUnavailableRibbon label={t('course.underConstruction')} />}
+        <span className={`absolute left-3 top-3 z-20 rounded px-2 py-0.5 text-xs font-semibold ${levelColors[course.level]}`}>
+          {t(`filter.${course.level.toLowerCase()}`)}
         </span>
       </div>
       <div className="p-4">
@@ -37,13 +40,35 @@ export default function CourseCard({ course }: { course: Course }) {
             <Clock className="h-3 w-3" />
             {course.duration}
           </span>
-          <span className="text-xs font-semibold text-accent transition-colors group-hover:underline group-hover:decoration-accent group-hover:underline-offset-4">
-            {t('course.viewCourse')} →
+          <span
+            className={`text-xs font-semibold ${
+              canEnter
+                ? 'text-accent transition-colors group-hover:underline group-hover:decoration-accent group-hover:underline-offset-4'
+                : 'text-muted-foreground'
+            }`}
+          >
+            {canEnter ? `${t('course.viewCourse')} →` : t('course.comingSoon')}
           </span>
         </div>
       </div>
-      {/* Orange underline animation on hover */}
       <div className="h-0.5 w-0 bg-accent transition-all duration-300 group-hover:w-full" />
+    </>
+  );
+
+  const className =
+    'group block overflow-hidden rounded border border-border bg-card transition-all hover:shadow-md';
+
+  if (!canEnter) {
+    return (
+      <article className={`${className} cursor-not-allowed`} aria-disabled>
+        {body}
+      </article>
+    );
+  }
+
+  return (
+    <Link to={`/academy/course/${course.slug}`} className={className}>
+      {body}
     </Link>
   );
 }

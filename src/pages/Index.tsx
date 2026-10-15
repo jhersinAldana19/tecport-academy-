@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useCourses } from '@/contexts/CourseContext';
 import CourseCard from '@/components/CourseCard';
 import Header from '@/components/Header';
+import PageHero from '@/components/PageHero';
 import type { Course } from '@/data/courses';
 
 type LevelFilter = 'All' | 'Basic' | 'Intermediate' | 'Advanced';
@@ -36,15 +37,7 @@ export default function Index() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Hero Banner */}
-      <div className="bg-[#1a4d6f] text-white">
-        <div className="mx-auto max-w-7xl px-4 py-12">
-          <h1 className="text-3xl font-bold">{t('home.heroTitle')}</h1>
-          <p className="mt-3 max-w-2xl text-base text-gray-100">
-            {t('home.heroSubtitle')}
-          </p>
-        </div>
-      </div>
+      <PageHero title={t('home.heroTitle')} subtitle={t('home.heroSubtitle')} />
 
       <main className="mx-auto max-w-7xl px-4 py-8">
         {/* Filters and Search */}

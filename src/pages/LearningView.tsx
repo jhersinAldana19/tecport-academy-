@@ -63,14 +63,31 @@ export default function LearningView() {
       <div className="flex flex-1 flex-col lg:flex-row">
         {/* Main content */}
         <div className="flex-1 p-4 lg:p-6">
-          {/* Video placeholder */}
-          <div className="mb-4 flex aspect-video items-center justify-center rounded border border-border bg-primary/5">
-            <div className="text-center">
-              <Play className="mx-auto h-12 w-12 text-primary/30" />
-              <p className="mt-2 text-sm text-muted-foreground">
-                {currentLesson?.type === 'video' ? 'Video Player' : currentLesson?.type === 'pdf' ? 'PDF Viewer' : 'Quiz Module'}
-              </p>
-            </div>
+          {/* Video/Content Area */}
+          <div className="mb-4 rounded border border-border bg-primary/5">
+            {currentLesson?.type === 'video' && currentLesson.videoUrl ? (
+              <div className="aspect-video">
+                <iframe
+                  className="h-full w-full rounded"
+                  src={`https://www.youtube.com/embed/${new URL(currentLesson.videoUrl).searchParams.get('v')}`}
+                  title={currentLesson.title}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+            ) : currentLesson ? (
+              <div className="flex aspect-video items-center justify-center">
+                <div className="text-center">
+                  {currentLesson.type === 'video' && <Play className="mx-auto h-12 w-12 text-primary/30" />}
+                  {currentLesson.type === 'pdf' && <FileText className="mx-auto h-12 w-12 text-primary/30" />}
+                  {currentLesson.type === 'quiz' && <HelpCircle className="mx-auto h-12 w-12 text-primary/30" />}
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {currentLesson.type === 'video' ? 'Video Player' : currentLesson.type === 'pdf' ? 'PDF Viewer' : 'Quiz Module'}
+                  </p>
+                </div>
+              </div>
+            ) : null}
           </div>
 
           {/* Lesson controls */}

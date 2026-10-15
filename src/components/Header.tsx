@@ -1,8 +1,9 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Globe, Menu, X, User } from 'lucide-react';
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth, type UserRole } from '@/contexts/AuthContext';
+import { TEMP_ACCESS } from '@/config/tempAccess';
 import type { Language } from '@/data/translations';
 import logo from '@/assets/logo.png';
 
@@ -12,24 +13,45 @@ export default function Header() {
   const { t, language, setLanguage } = useLanguage();
   const { role, setRole } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
   const navItems = [
-    { label: t('nav.courses'), path: '/academy', show: true },
-    { label: t('nav.library'), path: '/library', show: true },
-    { label: t('nav.myCourses'), path: '/academy/my-courses', show: role === 'student' || role === 'admin' },
-    { label: t('nav.admin'), path: '/academy/admin', show: role === 'admin' },
+    { label: t('nav.courses'), path: '/academy', show: role !== 'tecport_staff' },
+    { label: t('nav.library'), path: '/library', show: role !== 'tecport_staff' },
+    { label: t('nav.myCourses'), path: '/academy/my-courses', show: role === 'student' },
+    {
+      label: t('nav.admin'),
+      path: '/academy/admin',
+      show: TEMP_ACCESS.adminEnabled && role === 'admin',
+    },
+    { label: t('nav.tecportStaff'), path: '/academy/tecport-staff', show: role === 'tecport_staff' },
   ];
 
-  const roles: UserRole[] = ['guest', 'student', 'admin'];
+  const roles = TEMP_ACCESS.selectableRoles;
+
+  const routeByRole: Record<UserRole, string> = {
+    guest: '/academy',
+    student: '/academy',
+    tecport_staff: '/academy/tecport-staff',
+    admin: TEMP_ACCESS.adminEnabled ? '/academy/admin' : '/academy',
+  };
+
+  const homePath = role === 'tecport_staff' ? '/academy/tecport-staff' : '/academy';
+
+  const handleRoleChange = (nextRole: UserRole) => {
+    setRole(nextRole);
+    navigate(routeByRole[nextRole]);
+    setMobileOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        <Link to="/academy" className="flex items-center gap-2">
+        <Link to={homePath} className="flex items-center gap-2">
           <img src={logo} alt="TECPORT" className="h-8" />
           <span className="text-lg font-semibold text-muted-foreground">ACADEMY</span>
         </Link>
@@ -53,7 +75,7 @@ export default function Header() {
             <User className="h-3.5 w-3.5 text-muted-foreground" />
             <select
               value={role}
-              onChange={e => setRole(e.target.value as UserRole)}
+              onChange={e => handleRoleChange(e.target.value as UserRole)}
               className="bg-transparent text-xs font-medium text-foreground outline-none"
             >
               {roles.map(r => (
@@ -109,7 +131,7 @@ export default function Header() {
           <div className="mt-2 flex items-center gap-2 border-t border-border pt-2">
             <select
               value={role}
-              onChange={e => setRole(e.target.value as UserRole)}
+              onChange={e => handleRoleChange(e.target.value as UserRole)}
               className="rounded border border-border bg-transparent px-2 py-1 text-xs"
             >
               {roles.map(r => <option key={r} value={r}>{t(`role.${r}`)}</option>)}
