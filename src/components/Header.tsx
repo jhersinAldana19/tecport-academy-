@@ -1,9 +1,10 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Globe, Menu, X, User } from 'lucide-react';
+import { Globe, LogOut, Menu, User, X } from 'lucide-react';
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth, type UserRole } from '@/contexts/AuthContext';
 import { TEMP_ACCESS } from '@/config/tempAccess';
+import UserAvatar from '@/components/UserAvatar';
 import type { Language } from '@/data/translations';
 import logo from '@/assets/logo.png';
 
@@ -11,27 +12,38 @@ const languageLabels: Record<Language, string> = { en: 'EN', es: 'ES', pt: 'PT' 
 
 export default function Header() {
   const { t, language, setLanguage } = useLanguage();
-  const { role, setRole } = useAuth();
+  const { role, setRole, user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
 
-  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
+  const isActive = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
 
   const navItems = [
-    { label: t('nav.courses'), path: '/academy', show: role !== 'tecport_staff' },
-    { label: t('nav.library'), path: '/library', show: role !== 'tecport_staff' },
-    { label: t('nav.myCourses'), path: '/academy/my-courses', show: role === 'student' },
+    { label: t('nav.courses'), path: '/academy', show: !isAuthenticated && role !== 'tecport_staff' },
+    { label: t('nav.library'), path: '/library', show: !isAuthenticated && role !== 'tecport_staff' },
+    { label: t('nav.myCourses'), path: '/academy/my-courses', show: !isAuthenticated && role === 'student' },
     {
       label: t('nav.admin'),
       path: '/academy/admin',
       show: TEMP_ACCESS.adminEnabled && role === 'admin',
     },
-    { label: t('nav.tecportStaff'), path: '/academy/tecport-staff', show: role === 'tecport_staff' },
+    {
+      label: t('nav.tecportStaff'),
+      path: '/academy/tecport-staff',
+      show: isAuthenticated || role === 'tecport_staff',
+    },
+    {
+      label: t('nav.profile'),
+      path: '/academy/profile',
+      show: isAuthenticated,
+    },
   ];
 
   const roles = TEMP_ACCESS.selectableRoles;
+  const showRoleSwitcher = !isAuthenticated;
 
   const routeByRole: Record<UserRole, string> = {
     guest: '/academy',
@@ -40,12 +52,18 @@ export default function Header() {
     admin: TEMP_ACCESS.adminEnabled ? '/academy/admin' : '/academy',
   };
 
-  const homePath = role === 'tecport_staff' ? '/academy/tecport-staff' : '/academy';
+  const homePath = isAuthenticated || role === 'tecport_staff' ? '/academy/tecport-staff' : '/academy';
 
   const handleRoleChange = (nextRole: UserRole) => {
     setRole(nextRole);
     navigate(routeByRole[nextRole]);
     setMobileOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setMobileOpen(false);
+    navigate('/login');
   };
 
   return (
@@ -56,37 +74,61 @@ export default function Header() {
           <span className="text-lg font-semibold text-muted-foreground">ACADEMY</span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden items-center gap-6 md:flex">
-          {navItems.filter(n => n.show).map(item => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`text-sm font-medium transition-colors hover:text-accent ${isActive(item.path) ? 'text-accent' : 'text-gray-500'}`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems
+            .filter(n => n.show)
+            .map(item => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`text-sm font-medium transition-colors hover:text-accent ${
+                  isActive(item.path) ? 'text-accent' : 'text-gray-500'
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          {/* Role switcher */}
-          <div className="flex items-center gap-1 rounded border border-border px-2 py-1">
-            <User className="h-3.5 w-3.5 text-muted-foreground" />
-            <select
-              value={role}
-              onChange={e => handleRoleChange(e.target.value as UserRole)}
-              className="bg-transparent text-xs font-medium text-foreground outline-none"
-            >
-              {roles.map(r => (
-                <option key={r} value={r}>{t(`role.${r}`)}</option>
-              ))}
-            </select>
-          </div>
+          {isAuthenticated && user ? (
+            <div className="flex items-center gap-2">
+              <Link
+                to="/academy/profile"
+                className="flex max-w-[180px] items-center gap-2 rounded border border-border px-2 py-1 hover:bg-secondary"
+              >
+                <UserAvatar fullName={user.fullName} size="sm" />
+                <span className="truncate text-xs font-medium text-foreground">{user.fullName}</span>
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex items-center gap-1 rounded border border-border px-2 py-1 text-xs font-medium text-foreground hover:bg-secondary"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                {t('auth.logout')}
+              </button>
+            </div>
+          ) : showRoleSwitcher ? (
+            <div className="flex items-center gap-1 rounded border border-border px-2 py-1">
+              <User className="h-3.5 w-3.5 text-muted-foreground" />
+              <select
+                value={role}
+                onChange={e => handleRoleChange(e.target.value as UserRole)}
+                className="bg-transparent text-xs font-medium text-foreground outline-none"
+              >
+                {roles.map(r => (
+                  <option key={r} value={r}>
+                    {t(`role.${r}`)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
 
-          {/* Language switcher */}
           <div className="relative">
             <button
+              type="button"
               onClick={() => setLangOpen(!langOpen)}
               className="flex items-center gap-1 rounded border border-border px-2 py-1 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
             >
@@ -98,8 +140,14 @@ export default function Header() {
                 {(['en', 'es', 'pt'] as Language[]).map(lang => (
                   <button
                     key={lang}
-                    onClick={() => { setLanguage(lang); setLangOpen(false); }}
-                    className={`block w-full px-4 py-1.5 text-left text-xs font-medium transition-colors hover:bg-secondary ${language === lang ? 'text-accent' : 'text-foreground'}`}
+                    type="button"
+                    onClick={() => {
+                      setLanguage(lang);
+                      setLangOpen(false);
+                    }}
+                    className={`block w-full px-4 py-1.5 text-left text-xs font-medium transition-colors hover:bg-secondary ${
+                      language === lang ? 'text-accent' : 'text-foreground'
+                    }`}
                   >
                     {languageLabels[lang]}
                   </button>
@@ -109,39 +157,67 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile menu button */}
-        <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden">
+        <button type="button" onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden">
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
-      {/* Mobile nav */}
       {mobileOpen && (
         <div className="border-t border-border bg-card px-4 py-3 md:hidden">
-          {navItems.filter(n => n.show).map(item => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={() => setMobileOpen(false)}
-              className={`block py-2 text-sm font-medium ${isActive(item.path) ? 'text-accent' : 'text-gray-500'}`}
-            >
-              {item.label}
-            </Link>
-          ))}
-          <div className="mt-2 flex items-center gap-2 border-t border-border pt-2">
-            <select
-              value={role}
-              onChange={e => handleRoleChange(e.target.value as UserRole)}
-              className="rounded border border-border bg-transparent px-2 py-1 text-xs"
-            >
-              {roles.map(r => <option key={r} value={r}>{t(`role.${r}`)}</option>)}
-            </select>
+          {navItems
+            .filter(n => n.show)
+            .map(item => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setMobileOpen(false)}
+                className={`block py-2 text-sm font-medium ${
+                  isActive(item.path) ? 'text-accent' : 'text-gray-500'
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+
+          <div className="mt-2 space-y-2 border-t border-border pt-2">
+            {isAuthenticated && user ? (
+              <>
+                <div className="flex items-center gap-2 py-1">
+                  <UserAvatar fullName={user.fullName} size="sm" />
+                  <span className="text-xs font-medium text-foreground">{user.fullName}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-1 text-xs font-medium text-foreground"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  {t('auth.logout')}
+                </button>
+              </>
+            ) : (
+              <select
+                value={role}
+                onChange={e => handleRoleChange(e.target.value as UserRole)}
+                className="rounded border border-border bg-transparent px-2 py-1 text-xs"
+              >
+                {roles.map(r => (
+                  <option key={r} value={r}>
+                    {t(`role.${r}`)}
+                  </option>
+                ))}
+              </select>
+            )}
+
             <div className="flex gap-1">
               {(['en', 'es', 'pt'] as Language[]).map(lang => (
                 <button
                   key={lang}
+                  type="button"
                   onClick={() => setLanguage(lang)}
-                  className={`px-2 py-1 text-xs font-medium ${language === lang ? 'text-accent' : 'text-muted-foreground'}`}
+                  className={`px-2 py-1 text-xs font-medium ${
+                    language === lang ? 'text-accent' : 'text-muted-foreground'
+                  }`}
                 >
                   {languageLabels[lang]}
                 </button>

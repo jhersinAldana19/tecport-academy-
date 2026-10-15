@@ -7,10 +7,13 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CourseProvider } from "@/contexts/CourseContext";
 import { TEMP_ACCESS } from "@/config/tempAccess";
+import RequireStaffAuth from "@/components/RequireStaffAuth";
 import Index from "./pages/Index";
 import CourseDetail from "./pages/CourseDetail";
 import LearningView from "./pages/LearningView";
 import MyCourses from "./pages/MyCourses";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 import TecportStaff from "./pages/TecportStaff";
 import TecportStaffLearningView from "./pages/TecportStaffLearningView";
 import AdminLayout from "./components/AdminLayout";
@@ -36,7 +39,16 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Navigate to="/academy/tecport-staff" replace />} />
+                <Route
+                  path="/"
+                  element={
+                    <Navigate
+                      to={TEMP_ACCESS.requireStaffLogin ? "/login" : "/academy/tecport-staff"}
+                      replace
+                    />
+                  }
+                />
+                <Route path="/login" element={<Login />} />
                 <Route path="/academy" element={<Index />} />
                 <Route
                   path="/academy/course/:slug"
@@ -59,10 +71,29 @@ const App = () => (
                   }
                 />
                 <Route path="/academy/my-courses" element={<MyCourses />} />
-                <Route path="/academy/tecport-staff" element={<TecportStaff />} />
+                <Route
+                  path="/academy/profile"
+                  element={
+                    <RequireStaffAuth>
+                      <Profile />
+                    </RequireStaffAuth>
+                  }
+                />
+                <Route
+                  path="/academy/tecport-staff"
+                  element={
+                    <RequireStaffAuth>
+                      <TecportStaff />
+                    </RequireStaffAuth>
+                  }
+                />
                 <Route
                   path="/academy/tecport-staff/course/:courseId/learn"
-                  element={<TecportStaffLearningView />}
+                  element={
+                    <RequireStaffAuth>
+                      <TecportStaffLearningView />
+                    </RequireStaffAuth>
+                  }
                 />
                 <Route path="/library" element={<LibraryPage />} />
                 <Route path="/library/:equipmentId" element={<EquipmentLibraryPage />} />
@@ -77,7 +108,7 @@ const App = () => (
                     <Route path="users" element={<AdminUsers />} />
                   </Route>
                 ) : (
-                  <Route path="/academy/admin/*" element={<Navigate to="/academy/tecport-staff" replace />} />
+                  <Route path="/academy/admin/*" element={<Navigate to="/login" replace />} />
                 )}
                 <Route path="*" element={<NotFound />} />
               </Routes>

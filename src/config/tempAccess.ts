@@ -10,8 +10,10 @@ export const TEMP_ACCESS = {
   adminEnabled: false,
   /** Public Academy course cards are visible but cannot be opened. */
   publicCoursesEnterable: false,
+  /** Staff routes require hardcoded login until real backend ships. */
+  requireStaffLogin: true,
   /** Role used on first load for technicians. */
   defaultRole: 'tecport_staff' as UserRole,
-  /** Roles shown in the header switcher. */
+  /** Roles shown in the header switcher (hidden when a staff user is logged in). */
   selectableRoles: ['guest', 'student', 'tecport_staff'] as UserRole[],
 } as const;
