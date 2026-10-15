@@ -37,7 +37,7 @@ export default function AdminLayout() {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`mb-0.5 flex items-center gap-2 rounded px-3 py-2 text-sm font-medium transition-colors ${active ? 'bg-[#1a4d6f] text-white' : 'text-gray-500 hover:bg-secondary'}`}
+                  className={`mb-0.5 flex items-center gap-2 rounded px-3 py-2 text-sm font-medium transition-colors ${active ? 'bg-[#003558] text-white' : 'text-gray-500 hover:bg-secondary'}`}
                 >
                   <item.icon className="h-4 w-4" />
                   {t(item.key)}

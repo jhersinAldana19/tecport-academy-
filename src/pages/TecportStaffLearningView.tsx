@@ -66,41 +66,48 @@ export default function TecportStaffLearningView() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <div className="flex items-center justify-between border-b border-border bg-card px-4 py-2.5">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => navigate('/academy/tecport-staff')}
-            className="text-muted-foreground hover:text-foreground"
-            aria-label={t('common.back')}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </button>
-          <div>
-            <p className="text-xs text-muted-foreground">{courseTitle}</p>
-            <p className="text-sm font-semibold text-foreground">{sessionTitle}</p>
+      {/* Top bar */}
+      <div className="border-b border-border bg-card px-3 py-2.5 sm:px-4">
+        <div className="flex items-start gap-2 sm:items-center sm:justify-between">
+          <div className="flex min-w-0 flex-1 items-start gap-2 sm:items-center sm:gap-3">
+            <button
+              type="button"
+              onClick={() => navigate('/academy/tecport-staff')}
+              className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground sm:mt-0"
+              aria-label={t('common.back')}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <div className="min-w-0">
+              <p className="truncate text-xs text-muted-foreground">{courseTitle}</p>
+              <p className="truncate text-sm font-semibold text-foreground">{sessionTitle}</p>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground">
-            {progress}% {t('course.completed')}
-          </span>
-          <div className="h-1.5 w-24 rounded bg-secondary">
-            <div className="h-full rounded bg-accent transition-all" style={{ width: `${progress}%` }} />
+          <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-3">
+            <span className="whitespace-nowrap text-[10px] text-muted-foreground sm:text-xs">
+              {progress}% {t('course.completed')}
+            </span>
+            <div className="h-1.5 w-16 rounded bg-secondary sm:w-24">
+              <div
+                className="h-full rounded bg-accent transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col lg:flex-row">
-        <div className="flex-1 p-4 lg:p-6">
-          <div className="mb-4 flex aspect-video flex-col items-center justify-center rounded border border-border bg-primary/5 p-6 text-center">
-            <Play className="h-12 w-12 text-primary/30" />
+      {/* Main: stack on mobile, side-by-side on desktop (no forced empty gap) */}
+      <div className="flex flex-col lg:flex-1 lg:flex-row">
+        <div className="p-3 sm:p-4 lg:flex-1 lg:p-6">
+          <div className="mb-3 flex min-h-[220px] flex-col items-center justify-center rounded border border-border bg-primary/5 px-4 py-8 text-center sm:mb-4 sm:min-h-0 sm:aspect-video sm:p-6">
+            <Play className="h-10 w-10 text-primary/30 sm:h-12 sm:w-12" />
             <p className="mt-3 text-sm font-medium text-foreground">{sessionTitle}</p>
             <p className="mt-1 max-w-md text-xs text-muted-foreground">
               {t('tecportStaff.openVideoHint')}
             </p>
             {currentSession.videoUrl && (
-              <Button asChild variant="accent" size="sm" className="mt-4">
+              <Button asChild variant="accent" size="sm" className="mt-4 w-full max-w-xs sm:w-auto">
                 <a href={currentSession.videoUrl} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                   {t('tecportStaff.openVideo')}
@@ -109,18 +116,24 @@ export default function TecportStaffLearningView() {
             )}
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex gap-2">
-              {prevSession && (
-                <Button variant="outline" size="sm" onClick={() => goToSession(prevSession.id)}>
-                  <ArrowLeft className="mr-1 h-3.5 w-3.5" /> {t('course.previousLesson')}
-                </Button>
-              )}
-            </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+            {prevSession ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full sm:w-auto"
+                onClick={() => goToSession(prevSession.id)}
+              >
+                <ArrowLeft className="mr-1 h-3.5 w-3.5" /> {t('course.previousLesson')}
+              </Button>
+            ) : (
+              <span className="hidden sm:block sm:w-24" />
+            )}
 
             <Button
               variant={isCompleted ? 'secondary' : 'accent'}
               size="sm"
+              className="w-full sm:w-auto"
               onClick={toggleComplete}
             >
               {isCompleted ? (
@@ -131,21 +144,26 @@ export default function TecportStaffLearningView() {
               {t('course.markComplete')}
             </Button>
 
-            <div className="flex gap-2">
-              {nextSession && (
-                <Button variant="accent" size="sm" onClick={() => goToSession(nextSession.id)}>
-                  {t('course.nextLesson')} <ArrowRight className="ml-1 h-3.5 w-3.5" />
-                </Button>
-              )}
-            </div>
+            {nextSession ? (
+              <Button
+                variant="accent"
+                size="sm"
+                className="w-full sm:w-auto"
+                onClick={() => goToSession(nextSession.id)}
+              >
+                {t('course.nextLesson')} <ArrowRight className="ml-1 h-3.5 w-3.5" />
+              </Button>
+            ) : (
+              <span className="hidden sm:block sm:w-24" />
+            )}
           </div>
         </div>
 
-        <div className="w-full border-t border-border bg-card lg:w-80 lg:border-l lg:border-t-0">
-          <div className="p-4">
-            <h3 className="mb-3 text-sm font-semibold text-foreground">{t('course.courseContent')}</h3>
+        <aside className="w-full border-t border-border bg-card lg:w-80 lg:shrink-0 lg:border-l lg:border-t-0">
+          <div className="p-3 sm:p-4">
+            <h3 className="text-sm font-semibold text-foreground">{t('course.courseContent')}</h3>
           </div>
-          <div className="max-h-[calc(100vh-180px)] overflow-y-auto">
+          <div className="pb-4 lg:max-h-[calc(100vh-4.5rem)] lg:overflow-y-auto">
             {course.sections.map(section => (
               <div key={section.id}>
                 <div className="bg-secondary px-4 py-2">
@@ -161,7 +179,7 @@ export default function TecportStaffLearningView() {
                       key={session.id}
                       type="button"
                       onClick={() => goToSession(session.id)}
-                      className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-secondary ${
+                      className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-secondary sm:py-2.5 ${
                         isActive ? 'border-l-2 border-accent bg-secondary' : ''
                       }`}
                     >
@@ -175,7 +193,7 @@ export default function TecportStaffLearningView() {
                       >
                         {t(`tecportStaff.courses.${course.id}.sessions.${session.id}.title`)}
                       </span>
-                      <span className="text-[10px] text-muted-foreground">
+                      <span className="shrink-0 text-[10px] text-muted-foreground">
                         {t(`tecportStaff.courses.${course.id}.sessions.${session.id}.duration`)}
                       </span>
                     </button>
@@ -184,7 +202,7 @@ export default function TecportStaffLearningView() {
               </div>
             ))}
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );
