@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Clock } from 'lucide-react';
-import CourseUnavailableRibbon from '@/components/CourseUnavailableRibbon';
+import CourseStatusRibbon from '@/components/CourseStatusRibbon';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TEMP_ACCESS } from '@/config/tempAccess';
 import type { Course } from '@/data/courses';
@@ -27,7 +27,9 @@ export default function CourseCard({ course }: { course: Course }) {
           loading="lazy"
         />
         <div className="absolute inset-0 bg-foreground/20" />
-        {!canEnter && <CourseUnavailableRibbon label={t('course.underConstruction')} />}
+        {!canEnter && (
+          <CourseStatusRibbon label={t('course.underConstruction')} variant="unavailable" />
+        )}
         <span className={`absolute left-3 top-3 z-20 rounded px-2 py-0.5 text-xs font-semibold ${levelColors[course.level]}`}>
           {t(`filter.${course.level.toLowerCase()}`)}
         </span>

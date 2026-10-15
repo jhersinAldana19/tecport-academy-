@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Clock } from 'lucide-react';
-import CourseUnavailableRibbon from '@/components/CourseUnavailableRibbon';
+import CourseStatusRibbon from '@/components/CourseStatusRibbon';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { TecportStaffCourseLevelFilter } from '@/data/tecportStaffCourses';
 
@@ -53,7 +53,11 @@ export default function TecportStaffCourseCard({
           loading="lazy"
         />
         <div className="absolute inset-0 bg-foreground/20" />
-        {!hasContent && <CourseUnavailableRibbon label={t('course.underConstruction')} />}
+        {hasContent ? (
+          <CourseStatusRibbon label={t('course.availableNow')} variant="available" />
+        ) : (
+          <CourseStatusRibbon label={t('course.underConstruction')} variant="unavailable" />
+        )}
         <span className={`absolute left-3 top-3 z-20 rounded px-2 py-0.5 text-xs font-semibold ${levelColors[levelKey]}`}>
           {levelLabel}
         </span>
