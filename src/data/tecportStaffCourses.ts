@@ -33,8 +33,8 @@ export interface TecportStaffCourse {
   sections: TecportStaffSection[];
 }
 
-const HIDRAULICA_CLASE_1 = 'https://www.youtube.com/watch?v=qbaPz1r1KMo';
-const HIDRAULICA_CLASE_2 = 'https://www.youtube.com/watch?v=gOQwz7CZQf8';
+const HIDRAULICA_CLASE_1 = 'https://www.youtube.com/watch?v=iNitpvQrHyg';
+const HIDRAULICA_CLASE_2 = 'https://www.youtube.com/watch?v=poSrcGRhofI';
 
 export const tecportStaffCourses: readonly TecportStaffCourse[] = [
   {
