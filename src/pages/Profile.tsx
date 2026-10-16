@@ -13,6 +13,8 @@ export default function Profile() {
     return <Navigate to="/login" replace />;
   }
 
+  const display = (value: string) => (value.trim() ? value : '—');
+
   const fields = [
     { label: t('profile.fullName'), value: user.fullName },
     { label: t('profile.site'), value: user.site },
@@ -21,6 +23,8 @@ export default function Profile() {
     { label: t('profile.position'), value: user.position },
     { label: t('profile.username'), value: user.username },
   ];
+
+  const subtitleParts = [user.position, user.site].filter(part => part.trim());
 
   return (
     <div className="min-h-screen bg-background">
@@ -32,9 +36,9 @@ export default function Profile() {
             <UserAvatar fullName={user.fullName} size="lg" />
             <div className="text-center sm:text-left">
               <h1 className="text-xl font-bold text-foreground">{user.fullName}</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {user.position} · {user.site}
-              </p>
+              {subtitleParts.length > 0 && (
+                <p className="mt-1 text-sm text-muted-foreground">{subtitleParts.join(' · ')}</p>
+              )}
             </div>
           </div>
 
@@ -44,7 +48,7 @@ export default function Profile() {
                 <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   {field.label}
                 </dt>
-                <dd className="mt-1 text-sm font-medium text-foreground">{field.value}</dd>
+                <dd className="mt-1 text-sm font-medium text-foreground">{display(field.value)}</dd>
               </div>
             ))}
           </dl>
